@@ -1,84 +1,111 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center gap-3">
-            <div class="p-2 bg-yellow-100 rounded-lg">
-                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
+@extends('layouts.app')
+
+@section('content')
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <span class="text-2xl">✏️</span>
             </div>
             <div>
-                <h2 class="text-2xl font-bold text-gray-900">Edit Job</h2>
-                <p class="text-sm text-gray-500 mt-0.5">Update the job details below</p>
+                <h1 class="text-2xl font-bold text-gray-800">Edit Job: {{ $job->title }}</h1>
+                <p class="text-gray-500">Update the job details for Sweetwen</p>
             </div>
         </div>
-    </x-slot>
-
-    <div class="max-w-3xl mx-auto">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <form action="/jobs/{{ $job->id }}" method="POST" class="space-y-6 p-6 sm:p-8">
-                @csrf
-                @method('PUT')
-
-                <!-- Job Title -->
+        
+        <form action="{{ route('jobs.update', $job) }}" method="POST">
+            @csrf
+            @method('PUT')
+            
+            <div class="space-y-4">
+                <!-- Position Title -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Job Title <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                           name="title" 
-                           value="{{ $job->title }}"
-                           class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Position Title *</label>
+                    <select name="title" required class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition">
+                        <option value="{{ $job->title }}">{{ $job->title }}</option>
+                        <option>Service Crew</option>
+                        <option>Cashier</option>
+                        <option>Kitchen Crew</option>
+                        <option>Shift Supervisor</option>
+                        <option>Assistant Manager</option>
+                        <option>Restaurant Manager</option>
+                        <option>Delivery Rider</option>
+                        <option>Maintenance Staff</option>
+                        <option>HR Officer</option>
+                        <option>Store Manager</option>
+                    </select>
                 </div>
-
+                
                 <!-- Description -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Description <span class="text-red-500">*</span>
-                    </label>
-                    <textarea name="description" 
-                              rows="6"
-                              class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none">{{ $job->description }}</textarea>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                    <textarea name="description" rows="6" required class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition resize-none">{{ $job->description }}</textarea>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <!-- Company -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Company <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" 
-                               name="company" 
-                               value="{{ $job->company }}"
-                               class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
-                    </div>
-
-                    <!-- Salary -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Salary <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₱</span>
-                            <input type="number" 
-                                   name="salary" 
-                                   value="{{ $job->salary }}"
-                                   class="w-full border border-gray-300 rounded-xl pl-8 pr-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
-                        </div>
-                    </div>
+                
+                <!-- Location Dropdown -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
+                    <select name="location" required class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition">
+                        <option value="{{ $job->location }}">{{ $job->location }}</option>
+                        <option value="Metro Manila - Quezon City">Metro Manila - Quezon City</option>
+                        <option value="Metro Manila - Manila">Metro Manila - Manila</option>
+                        <option value="Metro Manila - Makati">Metro Manila - Makati</option>
+                        <option value="Metro Manila - Taguig">Metro Manila - Taguig</option>
+                        <option value="Metro Manila - Pasig">Metro Manila - Pasig</option>
+                        <option value="Metro Manila - Mandaluyong">Metro Manila - Mandaluyong</option>
+                        <option value="Metro Manila - Parañaque">Metro Manila - Parañaque</option>
+                        <option value="Metro Manila - Las Piñas">Metro Manila - Las Piñas</option>
+                        <option value="Metro Manila - Muntinlupa">Metro Manila - Muntinlupa</option>
+                        <option value="Metro Manila - Marikina">Metro Manila - Marikina</option>
+                        <option value="Metro Manila - Pasay">Metro Manila - Pasay</option>
+                        <option value="Metro Manila - Caloocan">Metro Manila - Caloocan</option>
+                        <option value="Metro Manila - Malabon">Metro Manila - Malabon</option>
+                        <option value="Metro Manila - Navotas">Metro Manila - Navotas</option>
+                        <option value="Metro Manila - Valenzuela">Metro Manila - Valenzuela</option>
+                        <option value="Metro Manila - San Juan">Metro Manila - San Juan</option>
+                        <option value="Luzon - Bulacan">Luzon - Bulacan</option>
+                        <option value="Luzon - Cavite">Luzon - Cavite</option>
+                        <option value="Luzon - Laguna">Luzon - Laguna</option>
+                        <option value="Luzon - Rizal">Luzon - Rizal</option>
+                        <option value="Luzon - Pampanga">Luzon - Pampanga</option>
+                        <option value="Luzon - Batangas">Luzon - Batangas</option>
+                        <option value="Visayas - Cebu">Visayas - Cebu</option>
+                        <option value="Visayas - Iloilo">Visayas - Iloilo</option>
+                        <option value="Visayas - Bacolod">Visayas - Bacolod</option>
+                        <option value="Mindanao - Davao">Mindanao - Davao</option>
+                        <option value="Mindanao - Cagayan de Oro">Mindanao - Cagayan de Oro</option>
+                        <option value="Mindanao - Zamboanga">Mindanao - Zamboanga</option>
+                        <option value="Mindanao - General Santos">Mindanao - General Santos</option>
+                        <option value="Mindanao - Butuan">Mindanao - Butuan</option>
+                    </select>
                 </div>
-
-                <!-- Buttons -->
-                <div class="flex items-center gap-4 pt-6 border-t border-gray-200">
-                    <button type="submit"
-                            class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 shadow-sm hover:shadow-md">
-                        Update Job
-                    </button>
-                    <a href="/jobs"
-                       class="text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200">
-                        Cancel
-                    </a>
+                
+                <!-- Salary -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Monthly Salary (₱)</label>
+                    <input type="number" name="salary" value="{{ $job->salary }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition" placeholder="e.g., 15000">
                 </div>
-            </form>
-        </div>
+                
+                <!-- Number of Slots -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Number of Slots</label>
+                    <input type="number" name="slots" value="{{ $job->slots }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition" placeholder="Leave empty for unlimited">
+                    <p class="text-xs text-gray-400 mt-1">Currently approved: {{ $job->approved_count }} / {{ $job->slots > 0 ? $job->slots : '∞' }}</p>
+                    @if($job->approved_count > 0 && $job->slots > 0 && $job->approved_count >= $job->slots)
+                        <p class="text-xs text-red-500 mt-1">Hiring complete! No more approvals can be made.</p>
+                    @endif
+                </div>
+            </div>
+            
+            <div class="flex justify-between gap-4 mt-8 pt-6 border-t">
+                <a href="{{ route('jobs.index') }}" class="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-6 py-3 rounded-lg transition text-center">
+                    Cancel
+                </a>
+                <button type="submit" class="inline-block bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold px-8 py-3 rounded-lg transition shadow-md">
+                    Update Job
+                </button>
+            </div>
+        </form>
     </div>
-</x-app-layout>
+</div>
+@endsection

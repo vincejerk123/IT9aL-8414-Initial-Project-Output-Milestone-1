@@ -1,110 +1,134 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900">Job Listings</h2>
-                    <p class="text-sm text-gray-500 mt-0.5">{{ $jobs->count() }} positions available</p>
-                </div>
-            </div>
-            
-            @if(auth()->user()->role == 'admin')
-                <a href="/jobs/create"
-                   class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 shadow-sm hover:shadow-md">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Post New Job
-                </a>
-            @endif
+@extends('layouts.app')
+
+@section('content')
+<div class="bg-white rounded-xl shadow-md p-6">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Manage Job Listings - Sweetwen</h1>
+            <p class="text-gray-500">Create, edit, or close job positions</p>
         </div>
-    </x-slot>
+        <a href="{{ route('jobs.create') }}" class="inline-block bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-4 py-2 rounded-lg transition shadow-md">
+            + Add New Job
+        </a>
+    </div>
 
-    @if($jobs->isEmpty())
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center">
-            <div class="max-w-sm mx-auto">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-1">No jobs yet</h3>
-                <p class="text-gray-500 mb-4">Get started by creating your first job listing</p>
-                @if(auth()->user()->role == 'admin')
-                    <a href="/jobs/create" class="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-700">
-                        Create a job listing
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </a>
-                @endif
-            </div>
-        </div>
-    @else
-        <div class="grid gap-4">
-            @foreach($jobs as $job)
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
-                    <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div class="flex-1">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-bold text-gray-900 mb-1">
-                                        {{ $job->title }}
-                                    </h3>
-                                    <div class="flex flex-wrap items-center gap-3 text-sm">
-                                        <span class="flex items-center gap-1 text-gray-600">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                            </svg>
-                                            {{ $job->company }}
-                                        </span>
-                                        <span class="flex items-center gap-1 text-green-600 font-semibold">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            ₱ {{ number_format($job->salary) }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Filter Buttons -->
+    <div class="flex flex-wrap gap-2 mb-4">
+        <button onclick="filterJobTable('all')" class="job-filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition bg-gray-600 text-white" data-job-filter="all">
+            All Jobs
+        </button>
+        <button onclick="filterJobTable('open')" class="job-filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition bg-green-500 text-white hover:bg-green-600" data-job-filter="open">
+            Open Positions
+        </button>
+        <button onclick="filterJobTable('closed')" class="job-filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition bg-red-500 text-white hover:bg-red-600" data-job-filter="closed">
+            Closed Positions
+        </button>
+        <button onclick="filterJobTable('full')" class="job-filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition bg-blue-500 text-white hover:bg-blue-600" data-job-filter="full">
+            Full (No Slots)
+        </button>
+        <button onclick="filterJobTable('available')" class="job-filter-btn px-4 py-2 rounded-lg text-sm font-semibold transition bg-purple-500 text-white hover:bg-purple-600" data-job-filter="available">
+            Available Slots
+        </button>
+    </div>
 
-                        <div class="flex items-center gap-2">
-                            <a href="/jobs/{{ $job->id }}"
-                               class="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-200">
-                                View Details
-                            </a>
-
-                            @if(auth()->user()->role == 'admin')
-                                <a href="/jobs/{{ $job->id }}/edit"
-                                   class="px-4 py-2 text-yellow-600 hover:bg-yellow-50 rounded-lg font-medium transition-colors duration-200">
-                                    Edit
-                                </a>
-
-                                <form action="/jobs/{{ $job->id }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
-                                            onclick="return confirm('Are you sure you want to delete this job?')"
-                                            class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors duration-200">
-                                        Delete
-                                    </button>
-                                </form>
+    <div class="overflow-x-auto">
+        <table class="w-full" id="jobsTable">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">ID</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Title</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Location</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Salary</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Slots Available</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($jobs as $job)
+                <tr class="border-t hover:bg-gray-50 job-row" 
+                    data-status="{{ $job->status }}" 
+                    data-is-full="{{ $job->slots > 0 && $job->approved_count >= $job->slots ? 'full' : 'available' }}">
+                    <td class="px-4 py-3">#{{ $job->id }}</td>
+                    <td class="px-4 py-3 font-medium">{{ $job->title }}</td>
+                    <td class="px-4 py-3">{{ $job->location }}</td>
+                    <td class="px-4 py-3">₱{{ number_format($job->salary, 2) }}</td>
+                    <td class="px-4 py-3">
+                        @if($job->slots > 0)
+                            @php $available = $job->slots - $job->approved_count; @endphp
+                            @if($available > 0)
+                                <span class="text-green-600 font-semibold">{{ $available }}</span>
+                                <span class="text-gray-500 text-sm">/ {{ $job->slots }}</span>
+                            @else
+                                <span class="text-red-600 font-semibold">0</span>
+                                <span class="text-gray-500 text-sm">/ {{ $job->slots }}</span>
+                                <span class="ml-1 text-xs text-red-500">(Full)</span>
                             @endif
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    @endif
-</x-app-layout>
+                        @else
+                            <span class="text-gray-400">Unlimited</span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3">
+                        @if($job->slots > 0 && $job->approved_count >= $job->slots)
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Full / Closed</span>
+                        @elseif($job->status == 'open')
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Open</span>
+                        @else
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">Closed</span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3 space-x-2">
+                        <a href="{{ route('jobs.edit', $job) }}" class="inline-block text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</a>
+                        <form action="{{ route('jobs.toggle', $job) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="inline-block text-yellow-600 hover:text-yellow-800 text-sm font-medium">
+                                {{ $job->status == 'open' ? 'Close' : 'Open' }}
+                            </button>
+                        </form>
+                        <form action="{{ route('jobs.destroy', $job) }}" method="POST" class="inline" onsubmit="return confirm('Delete this job? This will also delete all applications!')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="inline-block text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center py-8 text-gray-500">No job listings yet. Click "Add New Job" to create one.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function filterJobTable(filterType) {
+    const rows = document.querySelectorAll('.job-row');
+    rows.forEach(row => {
+        const status = row.dataset.status;
+        const isFull = row.dataset.isFull;
+        
+        if (filterType === 'all') {
+            row.style.display = '';
+        } else if (filterType === 'open') {
+            row.style.display = status === 'open' ? '' : 'none';
+        } else if (filterType === 'closed') {
+            row.style.display = status === 'closed' ? '' : 'none';
+        } else if (filterType === 'full') {
+            row.style.display = isFull === 'full' ? '' : 'none';
+        } else if (filterType === 'available') {
+            row.style.display = isFull === 'available' ? '' : 'none';
+        }
+    });
+    
+    document.querySelectorAll('.job-filter-btn').forEach(btn => {
+        if (btn.dataset.jobFilter === filterType) {
+            btn.classList.add('ring-2', 'ring-offset-2', 'ring-gray-400');
+        } else {
+            btn.classList.remove('ring-2', 'ring-offset-2', 'ring-gray-400');
+        }
+    });
+}
+</script>
+@endsection

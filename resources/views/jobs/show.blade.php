@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-3">
-            <a href="/jobs" class="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+            <a href="{{ route('jobs.index') }}" class="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -28,15 +28,22 @@
                         <div class="flex flex-wrap items-center gap-4 text-sm">
                             <span class="flex items-center gap-1 text-gray-600">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 </svg>
-                                {{ $job->company }}
+                                {{ $job->location }}
                             </span>
                             <span class="flex items-center gap-1 text-green-600 font-semibold">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                ₱ {{ number_format($job->salary) }}/month
+                                ₱ {{ number_format($job->salary, 2) }}/month
+                            </span>
+                            <span class="flex items-center gap-1 text-gray-500 text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                Posted: {{ $job->date_posted ? $job->date_posted->format('M d, Y') : $job->created_at->format('M d, Y') }}
                             </span>
                         </div>
                     </div>
@@ -54,6 +61,20 @@
                     </h3>
                     <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">
                         {{ $job->description }}
+                    </div>
+                </div>
+
+                <!-- Employer Info -->
+                <div class="mb-8 p-4 bg-gray-50 rounded-xl">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Posted by</h3>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-semibold">{{ $job->employer ? substr($job->employer->name, 0, 1) : 'E' }}</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">{{ $job->employer ? $job->employer->name : 'Employer' }}</p>
+                            <p class="text-sm text-gray-500">{{ $job->employer ? $job->employer->email : '' }}</p>
+                        </div>
                     </div>
                 </div>
 
@@ -107,34 +128,72 @@
                                         </div>
                                     @endif
                                 </div>
+                                @if($application->resume)
+                                    <div class="mt-3 pt-3 border-t border-gray-200">
+                                        <p class="text-sm text-gray-600">Resume submitted: 
+                                            <a href="{{ Storage::url($application->resume) }}" target="_blank" class="text-blue-600 hover:underline">
+                                                View Resume
+                                            </a>
+                                        </p>
+                                    </div>
+                                @endif
                             </div>
                         @else
-                            <form action="{{ route('applications.apply', $job) }}" method="POST" class="space-y-4">
+                            <form action="{{ route('applications.apply', $job) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                                 @csrf
+                                
+                                <!-- Resume Upload -->
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Cover Letter (Optional)
+                                        Resume <span class="text-gray-400">(Optional)</span>
+                                    </label>
+                                    <input type="file" 
+                                           name="resume" 
+                                           id="resume"
+                                           accept=".pdf,.doc,.docx"
+                                           class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                    <p class="text-xs text-gray-400 mt-1">Accepted formats: PDF, DOC, DOCX (Max 2MB)</p>
+                                </div>
+
+                                <!-- Cover Letter -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Cover Letter <span class="text-gray-400">(Optional)</span>
                                     </label>
                                     <textarea 
                                         name="cover_letter" 
-                                        rows="4"
+                                        rows="5"
                                         placeholder="Tell us why you're the perfect fit for this position..."
                                         class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
-                                    ></textarea>
-                                    <p class="text-xs text-gray-400 mt-1">Max 1000 characters</p>
+                                    >{{ old('cover_letter') }}</textarea>
+                                    <div class="flex justify-between items-center mt-1">
+                                        <p class="text-xs text-gray-400">Max 1000 characters</p>
+                                        <p class="text-xs text-gray-400" id="charCount">0/1000</p>
+                                    </div>
                                 </div>
+
                                 <button type="submit" 
                                         class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg">
                                     Submit Application
                                 </button>
                             </form>
+
+                            <script>
+                                const textarea = document.querySelector('textarea[name="cover_letter"]');
+                                const charCount = document.getElementById('charCount');
+                                if (textarea && charCount) {
+                                    textarea.addEventListener('input', function() {
+                                        charCount.textContent = this.value.length + '/1000';
+                                    });
+                                }
+                            </script>
                         @endif
                     </div>
                 @endif
 
                 <!-- Action Buttons -->
                 <div class="flex flex-wrap items-center gap-3 pt-6 border-t border-gray-200">
-                    <a href="/jobs" 
+                    <a href="{{ route('jobs.index') }}" 
                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -143,13 +202,26 @@
                     </a>
                     
                     @if(auth()->user()->role == 'admin')
-                        <a href="/jobs/{{ $job->id }}/edit"
+                        <a href="{{ route('jobs.edit', $job) }}"
                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-medium transition-all duration-200">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
                             Edit Job
                         </a>
+
+                        <form action="{{ route('jobs.destroy', $job) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    onclick="return confirm('Are you sure you want to delete this job?')"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-all duration-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Delete Job
+                            </button>
+                        </form>
                     @endif
                 </div>
             </div>

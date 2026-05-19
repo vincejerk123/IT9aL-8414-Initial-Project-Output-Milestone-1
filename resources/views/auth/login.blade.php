@@ -1,96 +1,114 @@
-<x-guest-layout>
-    <div class="mb-6 text-center">
-        <h2 class="text-2xl font-bold text-gray-900">Welcome Back!</h2>
-        <p class="text-gray-600 mt-2">Please sign in to your account</p>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Sweetwen - Sign In</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%); }
+    </style>
+</head>
+<body class="hero-gradient">
+    <div class="min-h-screen flex flex-col justify-center items-center p-4">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <img src="{{ asset('images/logo.png') }}" alt="Sweetwen" class="h-16 w-auto mx-auto mb-3" onerror="this.src='https://placehold.co/64x64/FFFFFF/white?text=SW'">
+            <h1 class="text-2xl font-bold text-white">Sweetwen</h1>
+            <p class="text-sm text-red-100 mt-1">Sign in to your account</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="w-full max-w-md">
+            <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    @if(session('status'))
+                        <div class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 rounded">
+                            <p class="text-sm text-green-700">{{ session('status') }}</p>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                        @csrf
+
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                                Email Address
+                            </label>
+                            <input 
+                                id="email" 
+                                type="email" 
+                                name="email" 
+                                value="{{ old('email') }}" 
+                                required 
+                                autofocus
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition @error('email') border-red-500 @enderror"
+                                placeholder="name@example.com"
+                            >
+                            @error('email')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                                Password
+                            </label>
+                            <input 
+                                id="password" 
+                                type="password" 
+                                name="password" 
+                                required 
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition @error('password') border-red-500 @enderror"
+                                placeholder="Enter your password"
+                            >
+                            @error('password')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Remember & Forgot -->
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="remember" class="rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                            </label>
+                            @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}" class="text-sm text-red-600 hover:text-red-700">
+                                    Forgot password?
+                                </a>
+                            @endif
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="w-full bg-red-700 hover:bg-red-800 text-white font-medium py-2.5 rounded-lg transition shadow-sm">
+                            Sign In
+                        </button>
+
+                        <!-- Register Link -->
+                        <div class="text-center pt-2">
+                            <p class="text-sm text-gray-600">
+                                Don't have an account?
+                                <a href="{{ route('register') }}" class="text-red-600 hover:text-red-700 font-medium">
+                                    Create an account
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8">
+            <p class="text-xs text-red-200">© {{ date('Y') }} Sweetwen Foods Corporation</p>
+        </div>
     </div>
-
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('login') }}" class="space-y-5">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
-            </label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
-                    </svg>
-                </div>
-                <input 
-                    id="email" 
-                    type="email" 
-                    name="email" 
-                    value="{{ old('email') }}" 
-                    required 
-                    autofocus 
-                    autocomplete="username"
-                    placeholder="you@example.com"
-                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('email') border-red-500 @enderror"
-                >
-            </div>
-            @error('email')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <!-- Password -->
-        <div>
-            <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
-                Password
-            </label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                    </svg>
-                </div>
-                <input 
-                    id="password" 
-                    type="password" 
-                    name="password" 
-                    required 
-                    autocomplete="current-password"
-                    placeholder="Enter your password"
-                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('password') border-red-500 @enderror"
-                >
-            </div>
-            @error('password')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <!-- Remember Me -->
-        <div class="flex items-center justify-between">
-            <label class="flex items-center">
-                <input type="checkbox" name="remember" class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
-                <span class="ml-2 text-sm text-gray-600">Remember me</span>
-            </label>
-
-            @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                    Forgot password?
-                </a>
-            @endif
-        </div>
-
-        <!-- Login Button -->
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg">
-            Sign In
-        </button>
-
-        <!-- Register Link -->
-        <div class="text-center pt-2">
-            <p class="text-sm text-gray-600">
-                Don't have an account?
-                <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-700 font-semibold">
-                    Create an account
-                </a>
-            </p>
-        </div>
-    </form>
-</x-guest-layout>
+</body>
+</html>

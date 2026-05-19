@@ -1,25 +1,84 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Sweetwen - Reset Password</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%); }
+    </style>
+</head>
+<body class="hero-gradient">
+    <div class="min-h-screen flex flex-col justify-center items-center p-4">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <img src="{{ asset('images/logo.png') }}" alt="Sweetwen" class="h-16 w-auto mx-auto mb-3" onerror="this.src='https://placehold.co/64x64/FFFFFF/white?text=SW'">
+            <h1 class="text-2xl font-bold text-white">Sweetwen</h1>
+            <p class="text-sm text-red-100 mt-1">Reset your password</p>
+        </div>
+
+        <!-- Reset Card -->
+        <div class="w-full max-w-md">
+            <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    @if(session('status'))
+                        <div class="mb-4 p-3 bg-green-50 border-l-4 border-green-500 rounded">
+                            <p class="text-sm text-green-700">{{ session('status') }}</p>
+                        </div>
+                    @endif
+
+                    <p class="text-sm text-gray-600 mb-6">
+                        Forgot your password? No problem. Just let us know your email address and we will email you a password reset link.
+                    </p>
+
+                    <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
+                        @csrf
+
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                                Email Address
+                            </label>
+                            <input 
+                                id="email" 
+                                type="email" 
+                                name="email" 
+                                value="{{ old('email') }}" 
+                                required 
+                                autofocus
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition @error('email') border-red-500 @enderror"
+                                placeholder="name@example.com"
+                            >
+                            @error('email')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="w-full bg-red-700 hover:bg-red-800 text-white font-medium py-2.5 rounded-lg transition shadow-sm">
+                            Send Reset Link
+                        </button>
+
+                        <!-- Back to Login -->
+                        <div class="text-center pt-2">
+                            <a href="{{ route('login') }}" class="text-sm text-red-600 hover:text-red-700">
+                                Back to Sign In
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8">
+            <p class="text-xs text-red-200">© {{ date('Y') }} Sweetwen Foods Corporation</p>
+        </div>
     </div>
-
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('password.email') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</body>
+</html>
